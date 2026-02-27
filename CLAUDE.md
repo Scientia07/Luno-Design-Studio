@@ -5,11 +5,11 @@ FILE METADATA
 filename:       CLAUDE.md
 created:        2026-02-26
 updated:        2026-02-26
-version:        1.0.0
+version:        1.1.0
 status:         active
 rating:         ★★★★★ (critical project file)
 author:         Joel + Claude
-related_docs:   [TO-DOS.md, docs/ROADMAP.md, docs/prd/prd-design-studio.md]
+related_docs:   [TO-DOS.md, docs/ROADMAP.md, docs/prd/prd-design-studio.md, docs/research/active/design-tokens/user-flows.md]
 description:    Project instructions for AI agents and developers
 ==============================================================================
 -->
@@ -341,6 +341,7 @@ Semantic versioning: `MAJOR.MINOR.PATCH`
 
 | Phase | Name | Focus | Status |
 |-------|------|-------|--------|
+| **0** | Foundation & Vertical Slice | CDN validation, studio chrome CSS, one E2E color picker | Current |
 | **1** | Design Tokens Studio | Colors, Typography, Spacing, Shadows, Presets, Export | Pending |
 | **2** | Layout Playground | CSS Grid/Flexbox builder, Drag & Drop, Responsive preview | Pending |
 | **3** | Shape & Component Lab | SVG editor, Component compositor, Variants | Pending |

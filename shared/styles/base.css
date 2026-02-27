@@ -34,7 +34,21 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* ═══ DESIGN TOKENS ═══ */
+/* ═══ STUDIO CHROME (fixed — not affected by user token changes) ═══ */
+:root {
+    --studio-bg: #1a1a2e;
+    --studio-bg-darker: #0f0f23;
+    --studio-surface: #16213e;
+    --studio-surface-hover: #1a2742;
+    --studio-border: rgba(255, 255, 255, 0.08);
+    --studio-border-focus: #818cf8;
+    --studio-text: #e2e8f0;
+    --studio-text-muted: rgba(226, 232, 240, 0.6);
+    --studio-accent: #818cf8;
+    --studio-accent-hover: #6366f1;
+}
+
+/* ═══ DESIGN TOKENS (user-editable, cascade into preview area) ═══ */
 :root {
     /* Primary palette */
     --color-primary: #6366f1;

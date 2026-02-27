@@ -6,7 +6,7 @@ filename:       2026-02-26-project-setup.md
 created:        2026-02-26
 updated:        2026-02-26
 version:        1.0.0
-status:         active
+status:         archived
 rating:         ★★★★☆
 author:         Joel + Claude
 related_docs:   [../ROADMAP.md, ../prd/prd-design-studio.md, ../../CLAUDE.md]
@@ -18,6 +18,24 @@ description:    Initial project setup handoff — repo creation, structure, skil
 
 **Session Date:** 2026-02-26
 **Focus:** Repository creation, directory structure, documentation, skill setup
+
+## Conclusion & Lessons Learned
+
+**Closed:** 2026-02-26 | **Outcome:** completed
+
+### Lessons
+
+1. **[ARCHITECTURE] A vertical slice before full build prevents wasted effort.** The initial plan jumped straight from scaffolding to building all 12 tasks. The quality audit revealed the architecture (state → CSS → preview pipeline) was unproven. Adding a Phase 0 vertical slice (one color picker end-to-end) validates the core data flow before committing to 18 tasks.
+
+2. **[CODE-PATTERN] HSL hue rotation produces perceptually uneven color harmonies.** The PRD's harmony algorithm used `hsl.h` for hue rotation, but HSL lightness is not perceptually uniform — a 180° rotation can produce wildly different perceived brightness. OKLCH hue rotation (`oklch.h`) preserves perceived lightness, which is the entire reason for choosing OKLCH as the color engine.
+
+3. **[ARCHITECTURE] Separate editor chrome from user-editable tokens in CSS variables.** Without `--studio-*` (fixed) vs `--color-*` (editable) separation, users changing background colors would break the editor UI itself. This pattern (seen in Figma, VS Code themes) was missing from the initial CSS architecture.
+
+4. **[PROCESS] Quality audit before building catches document drift.** Cross-referencing PRD ↔ CLAUDE.md ↔ TO-DOS ↔ ROADMAP revealed 10+ inconsistencies (wrong library refs, missing tasks, conflicting algorithms, no acceptance criteria). Finding these after building would have meant rework.
+
+5. **[INSIGHT] User flow mapping exposes UX gaps invisible in technical specs.** The PRD had detailed requirements but no onboarding flow, no error states, no preset hover preview, and no conflict resolution for shared URLs. These only became visible when tracing actual user journeys step by step.
+
+6. **[PERFORMANCE] Multi-level debouncing is essential for real-time editors.** CSS variable updates must be instant (60fps), but localStorage writes are synchronous/blocking and undo history requires deep cloning. Without separating update frequencies (16ms → 50ms → 300ms → 2000ms), a 1-second color drag would cause 60 localStorage writes and visible jank.
 
 ---
 

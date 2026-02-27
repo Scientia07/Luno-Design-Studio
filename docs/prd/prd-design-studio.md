@@ -5,18 +5,19 @@ FILE METADATA
 filename:       prd-design-studio.md
 created:        2026-02-10
 updated:        2026-02-11
-version:        2.0.0
+version:        2.1.0
 status:         draft
 rating:         ★★★★★
 author:         Joel + Claude
 related_docs:   [prd-design-dashboard.md, ../../design-dashboard/index.html, ../../CLAUDE.md]
 description:    PRD for the Design Studio - Hybrid visual editor (Vanilla JS baseline + Framework comparison)
+changelog:      2.1.0 — Fixed harmony algo HSL→OKLCH, added validation/onboarding/error/debounce sections, updated deps
 ==============================================================================
 -->
 
 # PRD: Design Studio
 
-> **Version:** 2.0.0
+> **Version:** 2.1.0
 > **Status:** Draft
 > **Author:** Joel + Claude
 > **Created:** 2026-02-10
@@ -126,7 +127,7 @@ Das `/design-dashboard/index.html` (1.566 Zeilen) bringt bereits:
 | **[Open Props](https://github.com/argyleink/open-props)** | Design Tokens | **5.3k Stars**, 100+ kuratierte Tokens, CDN-ready, MIT |
 | **[Gogh Themes](https://github.com/Gogh-Co/Gogh)** | Theme Collection | **10.1k Stars**, 250+ Color Themes als JSON, MIT |
 | [SortableJS](https://sortablejs.github.io/Sortable/) | Drag & Drop Lib | ~10KB gzip, native HTML5 DnD |
-| [Two.js](https://two.js.org/) | 2D Graphics | ~16KB gzip, SVG/Canvas/WebGL Renderer |
+| [SVG.js](https://svgjs.dev/) | 2D SVG Library | ~16KB gzip, fluent API, plugin ecosystem |
 | [W3C Design Tokens Spec](https://www.w3.org/community/design-tokens/) | Standard | Erste stabile Version 2025, JSON-basiert |
 | [Catppuccin](https://catppuccin.com/) | Theme Framework | 4 Flavor-Varianten, CSS Variables verfügbar, MIT |
 | [Material Design Palette](https://gist.github.com/kawanet/a880c83f06d6baf742e45ac9ac52af96) | Color System | Offizielle Google Material Colors als JSON |
@@ -477,7 +478,7 @@ const studioState = {
 |---------|---------|-------------|-------|-------------|
 | **Chroma.js** | 3.x | ~13.5 KB | Palette Gen (OKLCH), Color Harmony, Colorblind Sim, Kontrast | CDN + lokale Kopie |
 | **SortableJS** | 1.15.x | ~10 KB | Drag & Drop für Layout Builder (Phase 2) | CDN + lokale Kopie |
-| **Two.js** | 0.8.x | ~16 KB | SVG Rendering & Shape Manipulation (Phase 3) | CDN + lokale Kopie |
+| **SVG.js** | 3.x | ~16 KB | SVG Manipulation & Shape Editor (Phase 3) | CDN + lokale Kopie |
 | **Inter Font** | - | ~15 KB | Standard UI Font | Google Fonts CDN |
 | **Total** | | **~54.5 KB** | Deutlich unter 100 KB Budget | |
 
@@ -488,9 +489,17 @@ const studioState = {
 - 10.5k GitHub Stars, seit 2011 maintained, BSD-Lizenz
 - Erspart ~100 Zeilen eigene Konvertierungsfunktionen
 
+**Aktualisiert nach Library Research (2026-02-26):**
+- **vanilla-colorful** (2.7 KB) → Web Component color picker, replacing native `<input type="color">` for better UX
+- **interact.js** (17 KB) → Drag + Resize + Rotate for SVG shape editor (Phase 3)
+- **SVG.js** (16 KB) → Replaces SVG.js — lighter, better API for pure SVG manipulation
+- **Motion** (2.3 KB) → Spring physics animations for UI micro-interactions
+- **noUiSlider** (8 KB) → Accessible range sliders for all token controls
+- **Split.js** (2 KB) → Resizable editor panels
+
 **Bewusst NICHT verwendet:**
-- ~~vanilla-colorful~~ → Native `<input type="color">` reicht
-- ~~interact.js~~ → Two.js hat eingebaute Drag-Unterstützung
+- ~~Fabric.js~~ → 90 KB, overkill unless we need Figma-like grouping (upgrade path for future)
+- ~~GSAP~~ → Now free, but Motion is 1/10th the size
 - ~~Editor.js~~ → Overkill für unsere Controls
 - ~~Open Props CDN~~ → Wir generieren eigene Tokens, nutzen Open Props nur als Preset-Referenz
 
@@ -510,7 +519,7 @@ const studioState = {
 │   │   │   ├── token-editor.js            # Color, Typography, Spacing Controls
 │   │   │   ├── color-harmony.js           # Harmony Engine (Chroma.js Wrapper)
 │   │   │   ├── layout-builder.js          # CSS Grid/Flex + SortableJS
-│   │   │   ├── shape-editor.js            # SVG Canvas + Two.js
+│   │   │   ├── shape-editor.js            # SVG Canvas + SVG.js
 │   │   │   └── component-lab.js           # Component Templates + Variants
 │   │   ├── export-engine.js               # CSS/JSON/HTML/SVG/URL Export
 │   │   ├── theme-browser.js               # Gogh Theme Search/Filter
@@ -524,7 +533,7 @@ const studioState = {
 │   └── lib/
 │       ├── chroma.min.js                  # Chroma.js (lokal cached)
 │       ├── sortable.min.js                # SortableJS (lokal cached)
-│       └── two.min.js                     # Two.js (lokal cached)
+│       └── two.min.js                     # SVG.js (lokal cached)
 │
 ├── v2-svelte/                             # ═══ FRAMEWORK VERSION ═══
 │   ├── src/
@@ -561,18 +570,21 @@ import chroma from 'chroma-js';
 
 function generateHarmony(baseHex, mode) {
   const base = chroma(baseHex);
-  const hue = base.get('hsl.h');
+  // CRITICAL: Use oklch.h (not hsl.h) for perceptually uniform hue rotation.
+  // HSL hue rotation produces uneven perceived brightness across the palette.
+  // OKLCH maintains consistent lightness/chroma, yielding balanced harmonies.
+  const hue = base.get('oklch.h');
 
   const harmonies = {
     complementary: [hue, (hue + 180) % 360],
-    analogous:     [hue, (hue + 30) % 360, (hue + 330) % 360],
+    analogous:     [hue, (hue + 30) % 360, (hue - 30 + 360) % 360],
     triadic:       [hue, (hue + 120) % 360, (hue + 240) % 360],
     split:         [hue, (hue + 150) % 360, (hue + 210) % 360],
     tetradic:      [hue, (hue + 90) % 360, (hue + 180) % 360, (hue + 270) % 360]
   };
 
   return harmonies[mode].map(h =>
-    chroma(base).set('hsl.h', h).hex()
+    chroma(base).set('oklch.h', h).hex()
   );
 }
 ```
@@ -624,21 +636,42 @@ function decodeThemeFromURL() {
 
 #### Color Blindness Simulation
 
+**Primary approach: SVG color matrix filters on the preview container.**
+This applies a CSS filter to the entire preview area, simulating how the
+full UI looks to users with color vision deficiency — not just individual swatches.
+
 ```javascript
-function simulateColorblind(hex, type) {
-  // Chroma.js doesn't have built-in colorblind sim,
-  // but we can use a CSS filter approach on the preview container
+function simulateColorblind(type) {
   const filters = {
+    none:         '',
     deuteranopia: 'url(#deuteranopia-filter)',
     protanopia:   'url(#protanopia-filter)',
     tritanopia:   'url(#tritanopia-filter)'
   };
-  // Apply SVG filter to preview container
-  previewEl.style.filter = type === 'none' ? '' : filters[type];
+  // Apply SVG filter to entire preview container
+  previewEl.style.filter = filters[type] || '';
 }
 
-// SVG color matrix filters for colorblind simulation
-// (embedded in HTML as hidden SVG)
+// SVG color matrix filters (embedded in HTML as hidden SVG)
+// Matrices based on Machado et al. (2009) — the standard for CVD simulation.
+// See: https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/
+```
+
+**Secondary approach: Per-color simulation for the contrast dashboard.**
+When checking individual color pairs for accessibility, use per-color
+transformation to show what specific tokens look like under CVD.
+
+```javascript
+// Simulate what a single color looks like under CVD
+// Using Chroma.js color space conversion as approximation
+function simulateColorSingle(hex, type) {
+  // Apply CVD transformation matrix to the color's RGB values
+  // Returns the simulated hex color for display in contrast matrix
+  const rgb = chroma(hex).rgb();
+  const matrix = CVD_MATRICES[type]; // Machado et al. matrices
+  const simulated = applyMatrix(rgb, matrix);
+  return chroma(simulated, 'rgb').hex();
+}
 ```
 
 #### Observer Pattern (State → UI Sync)
@@ -667,8 +700,98 @@ class StudioState {
 
   undo() { /* Pop from past, push to future, sync CSS + URL */ }
   redo() { /* Pop from future, push to past, sync CSS + URL */ }
+
+  // Preview mode: temporary state override for preset hover
+  preview(overrides) { /* Apply CSS vars without touching state/history */ }
+  previewClear() { /* Revert CSS vars to actual state */ }
 }
 ```
+
+### 4.8 Input Validation (Added 2026-02-26)
+
+All state mutations must pass through a validation layer before being accepted.
+
+```javascript
+const validators = {
+  color: (v) => /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) || chroma.valid(v),
+  dimension: (v) => /^\d+(\.\d+)?(px|rem|em|%)$/.test(v),
+  number: (v) => typeof v === 'number' && !isNaN(v) && isFinite(v),
+  fontFamily: (v) => typeof v === 'string' && v.length > 0,
+  shadow: (v) => typeof v === 'string'  // Basic check; CSS validates on apply
+};
+
+// In state.set():
+set(path, value) {
+  const type = this.#getTokenType(path);
+  if (type && !validators[type](value)) {
+    this.#emitError(path, `Invalid ${type}: ${value}`);
+    return false; // Reject — state unchanged
+  }
+  // ... proceed with normal set logic
+}
+```
+
+### 4.9 Error States & Fallbacks (Added 2026-02-26)
+
+| Scenario | Detection | User-Facing Response |
+|----------|-----------|---------------------|
+| Chroma.js CDN fails | `import` catch + timeout | Load from `lib/chroma.min.js`, show "Offline mode" badge |
+| localStorage full | `try/catch` on `setItem` | Toast: "Storage full — export your theme to keep it safe" |
+| URL hash corrupted | `try/catch` on Base64 decode | Load defaults, banner: "Couldn't load shared theme" |
+| Google Fonts CDN fails | `FontFace.load()` timeout | Fall back to system fonts, show font name with "(system)" |
+| Invalid color pasted | Validator rejects | Inline error on input, state unchanged |
+| Two browser tabs conflict | `storage` event listener | Newer tab wins, older tab refreshes state |
+| Clipboard copy fails (HTTP) | `navigator.clipboard` catch | Show textarea fallback: "Select All + Copy" |
+
+### 4.10 Onboarding & First-Run (Added 2026-02-26)
+
+**Detection:** `localStorage.getItem('onboarding_seen') !== 'true'`
+
+**Flow:**
+1. First visit: load default theme (LunoLabs Dark), all controls populated
+2. Highlight primary color picker with Rough Notation hand-drawn circle
+3. Subtle tooltip: "Start here — pick a color and watch the preview change"
+4. On first color change: dismiss highlight, show next tip at Harmony panel
+5. On first export: confetti celebration, mark `first_export_done`
+6. After all 3 milestones: set `onboarding_seen: true`
+
+**Principles:**
+- Never block interaction — all tips are overlays that can be dismissed
+- Tips appear only once per control type
+- Respect `prefers-reduced-motion` for animations
+- Store seen state per-tip in localStorage
+
+### 4.11 Multi-Level Debounce Pipeline (Added 2026-02-26)
+
+Real-time editing requires different update frequencies for different concerns:
+
+```
+User Input (color picker drag, slider movement)
+  │
+  ▼ throttle 16ms (= 60fps)
+CSS Custom Property Update
+  ├── document.documentElement.style.setProperty('--color-primary', value)
+  └── Visual update is INSTANT — browser repaints on next frame
+  │
+  ▼ debounce 50ms
+State Object Update
+  ├── state.#state.tokens.colors.primary.value = value
+  └── Triggers observer notifications to other modules
+  │
+  ▼ debounce 300ms
+History Push
+  ├── state.#history.past.push(deepClone(previousState))
+  └── One undo step per "interaction", not per pixel
+  │
+  ▼ debounce 2000ms
+localStorage Save + URL Hash Update
+  ├── localStorage.setItem('studio-state', JSON.stringify(state))
+  └── window.location.hash = 'theme=' + btoa(...)
+```
+
+**Why this matters:** Without multi-level debouncing, dragging a color picker
+for 1 second at 60fps would create 60 undo history entries and 60 localStorage
+writes. With this pipeline, it creates 1 undo entry and 1 save.
 
 ---
 
@@ -762,7 +885,7 @@ Phase 2: Layout Playground         ░░░░░░░░░░░░░░░
 └── HTML/CSS Export
 
 Phase 3: Shape & Component Lab     ░░░░░░░░░░░░░░░░░░░░   0%  (~1 Session)
-├── Two.js Integration
+├── SVG.js Integration
 ├── SVG Canvas + Shape Primitives
 ├── Shape Selection + Transform
 ├── Component Compositor
@@ -819,7 +942,7 @@ Phase 4: Framework Version          ░░░░░░░░░░░░░░�
 
 | # | Task | Priority | Abhängigkeit |
 |---|------|----------|-------------|
-| 3.1 | Two.js einbinden + SVG Canvas Setup | Must | Phase 1 |
+| 3.1 | SVG.js einbinden + SVG Canvas Setup | Must | Phase 1 |
 | 3.2 | Shape Toolbar (Rect, Circle, Line, etc.) | Must | 3.1 |
 | 3.3 | Shape Properties Panel (Fill, Stroke, Size) | Must | 3.1 |
 | 3.4 | Shape Selection + Drag + Resize | Must | 3.1 |
@@ -1010,10 +1133,10 @@ Die folgenden Fragen aus v1.0.0 wurden beantwortet:
 │ JS Modules (own)   │ ~15 KB   │ Custom Code (~1,830 LOC)           │
 │ Chroma.js          │ ~13.5 KB │ Library (gzip)           ← NEU    │
 │ SortableJS         │ ~10 KB   │ Library (gzip) – Phase 2           │
-│ Two.js             │ ~16 KB   │ Library (gzip) – Phase 3           │
+│ SVG.js             │ ~16 KB   │ Library (gzip) – Phase 3           │
 │ Inter Font         │ ~15 KB   │ Font (subset)                      │
 ├────────────────────┼──────────┼────────────────────────────────────┤
-│ TOTAL (Phase 1)    │ ~57 KB   │ Ohne SortableJS + Two.js           │
+│ TOTAL (Phase 1)    │ ~57 KB   │ Ohne SortableJS + SVG.js           │
 │ TOTAL (Phase 3)    │ ~83 KB   │ Alle Libraries geladen             │
 └────────────────────┴──────────┴────────────────────────────────────┘
 ```
@@ -1086,7 +1209,7 @@ Die folgenden Fragen aus v1.0.0 wurden beantwortet:
 | Material Colors | `gist.github.com/kawanet/a880c83f06d6baf742e45ac9ac52af96` | JSON | ~5 KB | `v1-vanilla/data/material-colors.json` |
 | Chroma.js | `unpkg.com/chroma-js` | JS | ~40 KB (raw) | `v1-vanilla/lib/chroma.min.js` |
 | SortableJS | `cdn.jsdelivr.net/npm/sortablejs` | JS | ~30 KB (raw) | `v1-vanilla/lib/sortable.min.js` |
-| Two.js | `cdn.jsdelivr.net/npm/two.js` | JS | ~62 KB (raw) | `v1-vanilla/lib/two.min.js` |
+| SVG.js | `cdn.jsdelivr.net/npm/@svgdotjs/svg.js` | JS | ~50 KB (raw) | `v1-vanilla/lib/svg.min.js` |
 
 ### 11.6 Related Documents
 
@@ -1097,7 +1220,7 @@ Die folgenden Fragen aus v1.0.0 wurden beantwortet:
 - [Gogh Themes](https://github.com/Gogh-Co/Gogh)
 - [W3C Design Tokens Community Group](https://www.w3.org/community/design-tokens/)
 - [SortableJS Docs](https://sortablejs.github.io/Sortable/)
-- [Two.js Docs](https://two.js.org/docs/)
+- [SVG.js Docs](https://svgjs.dev/docs/3.0/)
 - [Svelte Docs](https://svelte.dev/docs)
 - [Catppuccin](https://catppuccin.com/)
 
@@ -1114,7 +1237,7 @@ Die folgenden Fragen aus v1.0.0 wurden beantwortet:
 | **Svelte Store** | Reactivity-Primitive in Svelte, ersetzt manuelles Observer Pattern |
 | **Chroma.js** | JavaScript Color Library für Konvertierung, Paletten, Kontrast (13.5KB) |
 | **SortableJS** | Drag & Drop Library, native HTML5 DnD (~10KB gzip) |
-| **Two.js** | 2D Drawing Library für SVG/Canvas/WebGL (~16KB gzip) |
+| **SVG.js** | 2D Drawing Library für SVG/Canvas/WebGL (~16KB gzip) |
 | **Tree-Shaking** | Build-Optimierung die ungenutzten Code entfernt (Vite/Rollup) |
 | **Gogh** | Open-Source Collection von 250+ Terminal Color Themes (MIT) |
 
