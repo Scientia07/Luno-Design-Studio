@@ -39,3 +39,22 @@ The PRD had detailed requirements but no onboarding flow, no error states, no pr
 
 ### [PERFORMANCE] Multi-level debouncing is essential for real-time editors
 CSS variable updates must be instant (60fps), but localStorage writes are synchronous/blocking and undo history requires deep cloning. Without separating update frequencies (16ms → 50ms → 300ms → 2000ms), a 1-second color drag would cause 60 localStorage writes and visible jank.
+
+---
+
+## Session: Phase 0 Vertical Slice — 2026-03-01
+
+### [PROCESS] Over-planning delays delivery — build the vertical slice first, then iterate
+CW-03 spent excessive time on design docs and implementation plans before writing any code. The user had to nudge to shift from planning to building. For Phase 0 prototypes, 10 minutes of planning is enough — get to working code fast and iterate based on feedback.
+
+### [INSIGHT] Abstract component swatches are useless for design exploration — show real page compositions
+The initial preview (isolated color blocks and form elements) felt dated and unhelpful. Users need to see colors applied to realistic UI patterns (navbar, hero section, features grid, testimonial, footer) to evaluate whether a palette works. This matches the Realtime Colors approach that the user referenced.
+
+### [CODE-PATTERN] CSS grid-template-rows 0fr→1fr enables smooth height animations without JS
+Wrapping content in a grid child with `overflow: hidden` and transitioning the parent's `grid-template-rows` between `0fr` and `1fr` creates a smooth slide-down animation. Avoids the `max-height` hack and works with dynamic content heights.
+
+### [ARCHITECTURE] URL hash encoding enables zero-backend palette sharing
+Encoding 5 hex colors as `primary-secondary-accent-warning-danger` in the URL hash provides instant sharing with no server, no database, and full bookmark/copy-paste support. Decode on page load with `fromURLHash(location.hash.slice(1))`.
+
+### [DEPENDENCY] Import maps + CDN ESM work reliably for prototyping
+`<script type="importmap">` with jsdelivr ESM URLs works in all modern browsers. Combined with vanilla-colorful web component self-registration, the entire studio runs with zero build step — proving the vanilla approach viable for Phase 0-3.

@@ -4,8 +4,8 @@ FILE METADATA
 ==============================================================================
 filename:       ROADMAP.md
 created:        2026-02-26
-updated:        2026-02-27
-version:        2.1.0
+updated:        2026-03-01
+version:        2.2.0
 status:         active
 rating:         ★★★★☆
 author:         Joel + Claude
@@ -21,8 +21,8 @@ description:    Project roadmap with phases, milestones, definitions of done, an
 ## Phase Overview
 
 ```
-Phase 0: Foundation & Vertical Slice  ██░░░░░░░░░░░░░░░░░░ 10%   ← CURRENT
-Phase 1: Design Tokens Studio         ░░░░░░░░░░░░░░░░░░░░  0%
+Phase 0: Foundation & Vertical Slice  ████████████████████ 100%  ✓ DONE
+Phase 1: Design Tokens Studio         ░░░░░░░░░░░░░░░░░░░░  0%   ← CURRENT
 Phase 2: Layout Playground            ░░░░░░░░░░░░░░░░░░░░  0%
 Phase 3: Shape & Component Lab        ░░░░░░░░░░░░░░░░░░░░  0%
 Phase 4: Svelte 5 Rebuild             ░░░░░░░░░░░░░░░░░░░░  0%
@@ -38,16 +38,16 @@ Phase 4: Svelte 5 Rebuild             ░░░░░░░░░░░░░░
 
 | Task | Priority | Status | Notes |
 |------|----------|--------|-------|
-| CDN & Import Map Validation | High | Pending | Chroma.js + vanilla-colorful via ES module imports |
+| CDN & Import Map Validation | High | **Done** | Chroma.js 3.1.2 + vanilla-colorful 0.7.2 via import map (CW-03) |
 | Studio Chrome CSS Variables | High | **Done** | `--studio-*` vars added to `shared/styles/base.css` (CW-02) |
-| Vertical Slice (1 color picker E2E) | High | Pending | Proves: input → state → CSS var → preview pipeline |
+| Vertical Slice (1 color picker E2E) | High | **Done** | 5 pickers, homepage preview, presets, randomize, export (CW-03) |
 
 ### Definition of Done — Phase 0
-- [ ] Chroma.js imports and runs in browser (CDN + local fallback)
-- [ ] vanilla-colorful Web Component renders
-- [ ] One color picker changes a CSS variable that updates a preview component
-- [ ] Studio chrome is visually separate from preview area
-- [ ] No console errors
+- [x] Chroma.js imports and runs in browser (CDN + local fallback)
+- [x] vanilla-colorful Web Component renders
+- [x] One color picker changes a CSS variable that updates a preview component
+- [x] Studio chrome is visually separate from preview area
+- [x] No console errors
 
 ---
 
