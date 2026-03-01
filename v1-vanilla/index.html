@@ -5,12 +5,12 @@ FILE METADATA
 filename:       index.html
 created:        2026-03-01
 updated:        2026-03-01
-version:        0.1.0
+version:        0.4.0
 status:         active
-rating:         ★★☆☆☆
+rating:         ★★★☆☆
 author:         Joel + Claude
 related_docs:   [css/studio.css, css/preview.css, js/studio-state.js]
-description:    Luno Design Studio — Phase 0 vertical slice entry point
+description:    Luno Design Studio — Visual Design Token Editor with homepage preview
 ==============================================================================
 -->
 <!DOCTYPE html>
@@ -21,17 +21,14 @@ description:    Luno Design Studio — Phase 0 vertical slice entry point
     <meta name="description" content="Luno Design Studio — Visual Design Token Editor">
     <title>Luno Design Studio</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Shared base styles + editor chrome + preview components -->
     <link rel="stylesheet" href="../shared/styles/base.css">
     <link rel="stylesheet" href="css/studio.css">
     <link rel="stylesheet" href="css/preview.css">
 
-    <!-- Import Map: CDN aliases for ES modules -->
     <script type="importmap">
     {
         "imports": {
@@ -40,101 +37,212 @@ description:    Luno Design Studio — Phase 0 vertical slice entry point
     }
     </script>
 
-    <!-- vanilla-colorful: self-registering Web Component -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/vanilla-colorful@0.7.2/hex-color-picker.js"></script>
 </head>
 <body>
-    <!-- Skip link (a11y) -->
     <a href="#main-preview" class="skip-link">Skip to preview</a>
 
     <div class="studio">
         <!-- ═══ HEADER ═══ -->
         <header class="studio-header" role="banner">
-            <span class="studio-header__title">Luno Design Studio</span>
+            <div class="studio-header__brand">
+                <div class="studio-header__logo" aria-hidden="true"></div>
+                <span class="studio-header__title">
+                    Luno Design Studio
+                </span>
+            </div>
             <div class="studio-header__actions">
+                <button class="studio-header__btn" id="btn-randomize" title="Randomize palette" aria-label="Randomize colors">&#x1f3b2;</button>
                 <button class="studio-header__btn" title="Undo (Ctrl+Z)" disabled aria-label="Undo">&#x21a9;</button>
                 <button class="studio-header__btn" title="Redo (Ctrl+Y)" disabled aria-label="Redo">&#x21aa;</button>
+                <button class="studio-header__btn studio-header__btn--export" id="btn-export" title="Export palette" aria-label="Export palette">&#x2913;</button>
             </div>
         </header>
 
-        <!-- ═══ MAIN: sidebar + preview ═══ -->
+        <!-- ═══ MAIN ═══ -->
         <main class="studio-main">
-            <!-- Sidebar: Color Controls -->
+            <!-- Sidebar -->
             <aside class="studio-sidebar" aria-label="Design controls">
+
+                <!-- Quick Presets -->
+                <div class="studio-sidebar__section">
+                    <h2 class="studio-sidebar__heading">Quick Presets</h2>
+                    <div id="quick-presets" class="quick-presets">
+                        <!-- Injected by main.js -->
+                    </div>
+                </div>
+
+                <!-- Color Controls -->
                 <div class="studio-sidebar__section">
                     <h2 class="studio-sidebar__heading">Colors</h2>
                     <div id="color-controls">
-                        <!-- Color controls injected by token-editor.js -->
+                        <!-- Injected by token-editor.js -->
                     </div>
                 </div>
             </aside>
 
-            <!-- Preview Canvas -->
+            <!-- Preview: Full Homepage Composition -->
             <section class="preview" id="main-preview" aria-label="Live preview">
-                <div class="preview__inner">
+                <div class="homepage">
 
-                    <!-- Sample Card -->
-                    <article class="preview-card">
-                        <div class="preview-card__header">
-                            <h3 class="preview-card__title">Sample Card</h3>
+                    <!-- Navbar -->
+                    <nav class="hp-nav">
+                        <span class="hp-nav__brand">Acme Inc.</span>
+                        <ul class="hp-nav__links">
+                            <li><a class="hp-nav__link">Product</a></li>
+                            <li><a class="hp-nav__link">Features</a></li>
+                            <li><a class="hp-nav__link">Pricing</a></li>
+                            <li><a class="hp-nav__link">About</a></li>
+                        </ul>
+                        <button class="hp-nav__cta">Get Started</button>
+                    </nav>
+
+                    <!-- Hero -->
+                    <section class="hp-hero">
+                        <div class="hp-hero__badge">New Release</div>
+                        <h1 class="hp-hero__title">
+                            Build products that<br>
+                            <span class="hp-hero__title-accent">people love to use</span>
+                        </h1>
+                        <p class="hp-hero__subtitle">
+                            Explore color palettes, typography, and layouts.
+                            See how your design tokens look on a real page composition.
+                        </p>
+                        <div class="hp-hero__actions">
+                            <a class="hp-btn hp-btn--primary">Start Building</a>
+                            <a class="hp-btn hp-btn--outline">View Demo</a>
                         </div>
-                        <div class="preview-card__body">
-                            <p class="preview-card__text">
-                                This card updates in real-time as you change colors.
-                                Every element uses CSS custom properties — zero hardcoded values.
+                    </section>
+
+                    <!-- Stats -->
+                    <div class="hp-stats">
+                        <div class="hp-stat">
+                            <div class="hp-stat__value">10k+</div>
+                            <div class="hp-stat__label">Active Users</div>
+                        </div>
+                        <div class="hp-stat">
+                            <div class="hp-stat__value">99.9%</div>
+                            <div class="hp-stat__label">Uptime</div>
+                        </div>
+                        <div class="hp-stat">
+                            <div class="hp-stat__value">4.9</div>
+                            <div class="hp-stat__label">Rating</div>
+                        </div>
+                        <div class="hp-stat">
+                            <div class="hp-stat__value">24/7</div>
+                            <div class="hp-stat__label">Support</div>
+                        </div>
+                    </div>
+
+                    <!-- Features -->
+                    <section class="hp-features">
+                        <h2 class="hp-features__title">Everything you need</h2>
+                        <p class="hp-features__subtitle">Powerful features to help you build faster and ship with confidence.</p>
+                        <div class="hp-features__grid">
+                            <div class="hp-feature">
+                                <div class="hp-feature__icon hp-feature__icon--primary">&#x26a1;</div>
+                                <h3 class="hp-feature__title">Lightning Fast</h3>
+                                <p class="hp-feature__text">Optimized performance with sub-second load times and instant interactions.</p>
+                            </div>
+                            <div class="hp-feature">
+                                <div class="hp-feature__icon hp-feature__icon--secondary">&#x1f512;</div>
+                                <h3 class="hp-feature__title">Secure by Default</h3>
+                                <p class="hp-feature__text">Enterprise-grade security with end-to-end encryption and SOC 2 compliance.</p>
+                            </div>
+                            <div class="hp-feature">
+                                <div class="hp-feature__icon hp-feature__icon--accent">&#x1f4ca;</div>
+                                <h3 class="hp-feature__title">Real-time Analytics</h3>
+                                <p class="hp-feature__text">Deep insights into user behavior with beautiful, actionable dashboards.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Testimonial -->
+                    <section class="hp-testimonial">
+                        <div class="hp-testimonial__card">
+                            <p class="hp-testimonial__quote">
+                                This tool completely changed how we approach design systems.
+                                The real-time preview makes it effortless to find the perfect palette.
                             </p>
+                            <div class="hp-testimonial__author">
+                                <div class="hp-testimonial__avatar"></div>
+                                <div>
+                                    <div class="hp-testimonial__name">Sarah Chen</div>
+                                    <div class="hp-testimonial__role">Design Lead, Stripe</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="preview-card__footer">
-                            Last updated just now
+                    </section>
+
+                    <!-- CTA -->
+                    <section class="hp-cta">
+                        <h2 class="hp-cta__title">Ready to get started?</h2>
+                        <p class="hp-cta__text">Join thousands of teams building better products.</p>
+                        <div class="hp-hero__actions">
+                            <a class="hp-btn hp-btn--primary">Start for Free</a>
+                            <a class="hp-btn hp-btn--outline">Talk to Sales</a>
                         </div>
-                    </article>
+                    </section>
 
-                    <!-- Buttons -->
-                    <div class="preview-buttons">
-                        <button class="preview-btn preview-btn--primary">Primary</button>
-                        <button class="preview-btn preview-btn--secondary">Secondary</button>
-                        <button class="preview-btn preview-btn--accent">Accent</button>
-                        <button class="preview-btn preview-btn--outline">Outline</button>
-                    </div>
-
-                    <!-- Alert -->
-                    <div class="preview-alert" role="status">
-                        <div class="preview-alert__title">Heads up</div>
-                        <div>This alert uses the warning color token. Change it in the sidebar.</div>
-                    </div>
-
-                    <!-- Text Block -->
-                    <div class="preview-text">
-                        <h2 class="preview-text__heading">Typography Preview</h2>
-                        <p class="preview-text__body">
-                            Body text using the primary text color. This paragraph shows
-                            how your chosen palette affects readability and hierarchy.
-                        </p>
-                        <p class="preview-text__muted">
-                            Muted text for secondary information and captions.
-                        </p>
-                    </div>
-
-                    <!-- Badges -->
-                    <div class="preview-badges">
-                        <span class="preview-badge preview-badge--primary">Primary</span>
-                        <span class="preview-badge preview-badge--success">Success</span>
-                        <span class="preview-badge preview-badge--danger">Danger</span>
-                        <span class="preview-badge preview-badge--info">Info</span>
-                    </div>
+                    <!-- Footer -->
+                    <footer class="hp-footer">
+                        <span>&copy; 2026 Acme Inc. All rights reserved.</span>
+                        <ul class="hp-footer__links">
+                            <li><a class="hp-footer__link">Privacy</a></li>
+                            <li><a class="hp-footer__link">Terms</a></li>
+                            <li><a class="hp-footer__link">Contact</a></li>
+                        </ul>
+                    </footer>
 
                 </div>
             </section>
         </main>
 
+        <!-- ═══ EXPORT PANEL (slide-over) ═══ -->
+        <div class="export-panel" id="export-panel" aria-label="Export palette" role="dialog" aria-hidden="true">
+            <div class="export-panel__header">
+                <h2 class="export-panel__title">Export Palette</h2>
+                <button class="export-panel__close" id="btn-export-close" aria-label="Close export panel">&times;</button>
+            </div>
+
+            <div class="export-panel__tabs" role="tablist">
+                <button class="export-panel__tab is-active" data-tab="css" role="tab" aria-selected="true">CSS</button>
+                <button class="export-panel__tab" data-tab="json" role="tab" aria-selected="false">JSON</button>
+                <button class="export-panel__tab" data-tab="url" role="tab" aria-selected="false">URL</button>
+            </div>
+
+            <div class="export-panel__body">
+                <pre class="export-panel__code" id="export-output"><code></code></pre>
+            </div>
+
+            <div class="export-panel__actions">
+                <button class="export-panel__btn export-panel__btn--copy" id="btn-copy">
+                    <span class="export-panel__btn-label">Copy</span>
+                </button>
+                <button class="export-panel__btn export-panel__btn--download" id="btn-download">
+                    <span class="export-panel__btn-label">Download</span>
+                </button>
+                <button class="export-panel__btn export-panel__btn--link" id="btn-share-link">
+                    <span class="export-panel__btn-label">Share Link</span>
+                </button>
+            </div>
+
+            <div class="export-panel__toast" id="export-toast" aria-live="polite"></div>
+        </div>
+        <div class="export-panel__backdrop" id="export-backdrop"></div>
+
         <!-- ═══ STATUS BAR ═══ -->
         <footer class="studio-statusbar">
-            <span>Phase 0 &middot; Vertical Slice</span>
-            <span>v0.1.0</span>
+            <div class="studio-statusbar__left">
+                <span class="studio-statusbar__dot"></span>
+                <span>Ready</span>
+            </div>
+            <div class="studio-statusbar__right">
+                <span>v0.4.0</span>
+            </div>
         </footer>
     </div>
 
-    <!-- App entry point -->
     <script type="module" src="js/main.js"></script>
 </body>
 </html>

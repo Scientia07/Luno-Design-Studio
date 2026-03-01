@@ -41,7 +41,7 @@ function createColorControl(token, state) {
     const el = document.createElement('div');
     el.className = 'color-control';
 
-    // Header: swatch + label
+    // Header: swatch + info block (label, hex, oklch)
     const header = document.createElement('div');
     header.className = 'color-control__header';
 
@@ -51,21 +51,14 @@ function createColorControl(token, state) {
     swatch.setAttribute('aria-label', `Pick ${token.label} color`);
     swatch.title = `Pick ${token.label} color`;
 
+    const info = document.createElement('div');
+    info.className = 'color-control__info';
+
     const label = document.createElement('span');
     label.className = 'color-control__label';
     label.textContent = token.label;
 
-    header.append(swatch, label);
-
-    // Picker wrapper
-    const pickerWrap = document.createElement('div');
-    pickerWrap.className = 'color-control__picker-wrap';
-
-    const picker = document.createElement('hex-color-picker');
-    picker.setAttribute('color', currentColor);
-    pickerWrap.appendChild(picker);
-
-    // Hex input
+    // Hex input — inline with label
     const hexInput = document.createElement('input');
     hexInput.className = 'color-control__hex-input';
     hexInput.type = 'text';
@@ -79,13 +72,30 @@ function createColorControl(token, state) {
     oklchDisplay.className = 'color-control__oklch';
     oklchDisplay.textContent = formatOklch(currentColor);
 
-    el.append(header, pickerWrap, hexInput, oklchDisplay);
+    info.append(label, hexInput, oklchDisplay);
+    header.append(swatch, info);
+
+    // Picker wrapper with inner div for animated slide
+    const pickerWrap = document.createElement('div');
+    pickerWrap.className = 'color-control__picker-wrap';
+
+    const pickerInner = document.createElement('div');
+    pickerInner.className = 'color-control__picker-inner';
+
+    const picker = document.createElement('hex-color-picker');
+    picker.setAttribute('color', currentColor);
+    pickerInner.appendChild(picker);
+    pickerWrap.appendChild(pickerInner);
+
+    el.append(header, pickerWrap);
 
     // ─── Events ───────────────────────────────────
 
-    // Toggle picker
+    // Toggle picker + active state
     swatch.addEventListener('click', () => {
+        const wasOpen = pickerWrap.classList.contains('is-open');
         pickerWrap.classList.toggle('is-open');
+        el.classList.toggle('is-active', !wasOpen);
     });
 
     // Picker drag → state
