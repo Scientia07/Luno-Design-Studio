@@ -1,0 +1,140 @@
+<!--
+==============================================================================
+FILE METADATA
+==============================================================================
+filename:       index.html
+created:        2026-03-01
+updated:        2026-03-01
+version:        0.1.0
+status:         active
+rating:         ★★☆☆☆
+author:         Joel + Claude
+related_docs:   [css/studio.css, css/preview.css, js/studio-state.js]
+description:    Luno Design Studio — Phase 0 vertical slice entry point
+==============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Luno Design Studio — Visual Design Token Editor">
+    <title>Luno Design Studio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Shared base styles + editor chrome + preview components -->
+    <link rel="stylesheet" href="../shared/styles/base.css">
+    <link rel="stylesheet" href="css/studio.css">
+    <link rel="stylesheet" href="css/preview.css">
+
+    <!-- Import Map: CDN aliases for ES modules -->
+    <script type="importmap">
+    {
+        "imports": {
+            "chroma-js": "https://cdn.jsdelivr.net/npm/chroma-js@3.1.2/+esm"
+        }
+    }
+    </script>
+
+    <!-- vanilla-colorful: self-registering Web Component -->
+    <script type="module" src="https://cdn.jsdelivr.net/npm/vanilla-colorful@0.7.2/hex-color-picker.js"></script>
+</head>
+<body>
+    <!-- Skip link (a11y) -->
+    <a href="#main-preview" class="skip-link">Skip to preview</a>
+
+    <div class="studio">
+        <!-- ═══ HEADER ═══ -->
+        <header class="studio-header" role="banner">
+            <span class="studio-header__title">Luno Design Studio</span>
+            <div class="studio-header__actions">
+                <button class="studio-header__btn" title="Undo (Ctrl+Z)" disabled aria-label="Undo">&#x21a9;</button>
+                <button class="studio-header__btn" title="Redo (Ctrl+Y)" disabled aria-label="Redo">&#x21aa;</button>
+            </div>
+        </header>
+
+        <!-- ═══ MAIN: sidebar + preview ═══ -->
+        <main class="studio-main">
+            <!-- Sidebar: Color Controls -->
+            <aside class="studio-sidebar" aria-label="Design controls">
+                <div class="studio-sidebar__section">
+                    <h2 class="studio-sidebar__heading">Colors</h2>
+                    <div id="color-controls">
+                        <!-- Color controls injected by token-editor.js -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Preview Canvas -->
+            <section class="preview" id="main-preview" aria-label="Live preview">
+                <div class="preview__inner">
+
+                    <!-- Sample Card -->
+                    <article class="preview-card">
+                        <div class="preview-card__header">
+                            <h3 class="preview-card__title">Sample Card</h3>
+                        </div>
+                        <div class="preview-card__body">
+                            <p class="preview-card__text">
+                                This card updates in real-time as you change colors.
+                                Every element uses CSS custom properties — zero hardcoded values.
+                            </p>
+                        </div>
+                        <div class="preview-card__footer">
+                            Last updated just now
+                        </div>
+                    </article>
+
+                    <!-- Buttons -->
+                    <div class="preview-buttons">
+                        <button class="preview-btn preview-btn--primary">Primary</button>
+                        <button class="preview-btn preview-btn--secondary">Secondary</button>
+                        <button class="preview-btn preview-btn--accent">Accent</button>
+                        <button class="preview-btn preview-btn--outline">Outline</button>
+                    </div>
+
+                    <!-- Alert -->
+                    <div class="preview-alert" role="status">
+                        <div class="preview-alert__title">Heads up</div>
+                        <div>This alert uses the warning color token. Change it in the sidebar.</div>
+                    </div>
+
+                    <!-- Text Block -->
+                    <div class="preview-text">
+                        <h2 class="preview-text__heading">Typography Preview</h2>
+                        <p class="preview-text__body">
+                            Body text using the primary text color. This paragraph shows
+                            how your chosen palette affects readability and hierarchy.
+                        </p>
+                        <p class="preview-text__muted">
+                            Muted text for secondary information and captions.
+                        </p>
+                    </div>
+
+                    <!-- Badges -->
+                    <div class="preview-badges">
+                        <span class="preview-badge preview-badge--primary">Primary</span>
+                        <span class="preview-badge preview-badge--success">Success</span>
+                        <span class="preview-badge preview-badge--danger">Danger</span>
+                        <span class="preview-badge preview-badge--info">Info</span>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <!-- ═══ STATUS BAR ═══ -->
+        <footer class="studio-statusbar">
+            <span>Phase 0 &middot; Vertical Slice</span>
+            <span>v0.1.0</span>
+        </footer>
+    </div>
+
+    <!-- App entry point -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

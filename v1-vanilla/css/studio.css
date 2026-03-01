@@ -1,0 +1,198 @@
+/*
+==============================================================================
+FILE METADATA
+==============================================================================
+filename:       studio.css
+created:        2026-03-01
+updated:        2026-03-01
+version:        0.1.0
+status:         draft
+related_docs:   [../index.html, ../../shared/styles/base.css]
+description:    Editor chrome layout — uses --studio-* variables only
+==============================================================================
+*/
+
+/* ═══ LAYOUT SHELL ═══ */
+.studio {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ═══ HEADER ═══ */
+.studio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) var(--space-4);
+    background: var(--studio-bg-darker);
+    border-bottom: 1px solid var(--studio-border);
+    z-index: var(--z-sticky);
+}
+
+.studio-header__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--studio-text);
+    letter-spacing: 0.02em;
+}
+
+.studio-header__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.studio-header__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--studio-border);
+    border-radius: var(--radius-md);
+    color: var(--studio-text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+}
+
+.studio-header__btn:hover {
+    background: var(--studio-surface-hover);
+    color: var(--studio-text);
+    border-color: var(--studio-border-focus);
+}
+
+.studio-header__btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* ═══ MAIN AREA ═══ */
+.studio-main {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    overflow: hidden;
+}
+
+/* ═══ SIDEBAR ═══ */
+.studio-sidebar {
+    background: var(--studio-bg);
+    border-right: 1px solid var(--studio-border);
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.studio-sidebar__section {
+    margin-bottom: var(--space-6);
+}
+
+.studio-sidebar__heading {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--studio-text-muted);
+    margin-bottom: var(--space-3);
+}
+
+/* ═══ COLOR CONTROL ═══ */
+.color-control {
+    margin-bottom: var(--space-4);
+}
+
+.color-control__header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.color-control__swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--studio-border);
+    cursor: pointer;
+    transition: border-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.color-control__swatch:hover,
+.color-control__swatch:focus-visible {
+    border-color: var(--studio-border-focus);
+}
+
+.color-control__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--studio-text);
+}
+
+.color-control__picker-wrap {
+    display: none;
+    margin: var(--space-2) 0;
+}
+
+.color-control__picker-wrap.is-open {
+    display: block;
+}
+
+.color-control__picker-wrap hex-color-picker {
+    width: 100%;
+}
+
+.color-control__hex-input {
+    width: 100%;
+    padding: var(--space-1) var(--space-2);
+    background: var(--studio-surface);
+    border: 1px solid var(--studio-border);
+    border-radius: var(--radius-sm);
+    color: var(--studio-text);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    transition: border-color var(--transition-fast);
+}
+
+.color-control__hex-input:focus {
+    outline: none;
+    border-color: var(--studio-border-focus);
+}
+
+.color-control__hex-input.is-invalid {
+    border-color: var(--color-danger);
+}
+
+.color-control__oklch {
+    font-size: 0.6875rem;
+    font-family: var(--font-mono);
+    color: var(--studio-text-muted);
+    margin-top: var(--space-1);
+}
+
+/* ═══ STATUS BAR ═══ */
+.studio-statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-1) var(--space-4);
+    background: var(--studio-bg-darker);
+    border-top: 1px solid var(--studio-border);
+    font-size: 0.6875rem;
+    color: var(--studio-text-muted);
+}
+
+/* ═══ RESPONSIVE ═══ */
+@media (max-width: 768px) {
+    .studio-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .studio-sidebar {
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--studio-border);
+    }
+}
